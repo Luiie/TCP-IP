@@ -37,15 +37,15 @@ int main(int argc,char **argv)
     //Assign an address to socket
     if(bind(serverSock, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) == -1)
         errorHandling("bind() error");
-    if(listen(serverSock, 5) == -1)      //대기상태
+    if(listen(serverSock, 5) == -1)
         errorHandling("listen() error");
     cilntAddressSize = sizeof(cilntAddress);
-    clintSock = accept(serverSock, (struct sockaddr*)&cilntAddress,&cilntAddressSize);        //요청 수락
+    clintSock = accept(serverSock, (struct sockaddr*)&cilntAddress,&cilntAddressSize);
 
     if(clintSock == -1)
         errorHandling("accept() error");
     write(clintSock, message, sizeof(message));
-    close(clintSock);       //연결 종료
+    close(clintSock);
     return 0;
 }
 
@@ -54,4 +54,4 @@ void errorHandling(char *message)
     fputs(message, stderr);
     fputc(' ',stderr);
     exit(1);
-}
+}  
