@@ -53,7 +53,7 @@ int main(int argc,char **argv)
         else
             printf("Connected: client%d \n", i+1);
         
-        while(strLength=read(clientSocket, message, BUFFER_SIZE) != 0)
+        while((strLength=read(clientSocket, message, BUFFER_SIZE)) != 0)
             write(clientSocket, message, strLength);
 
         close(clientSocket);
