@@ -10,11 +10,11 @@ void errorHandling(char *message);
 
 int main(int argc,char **argv)
 {
-    int serverSock;
-    int clintSock;
+    int serverSocket;
+    int clientSocket;
     struct sockaddr_in serverAddress;
-    struct sockaddr_in cilntAddress;
-    int cilntAddressSize;
+    struct sockaddr_in clientAddress;
+    int clientAddressSize;
     char message[]="Hello HANY!";
 
     if(argc != 2)
@@ -24,8 +24,8 @@ int main(int argc,char **argv)
     }
 
     //Create server socket
-    serverSock = socket(PF_INET, SOCK_STREAM, 0);
-    if(serverSock == -1)
+    serverSocket = socket(PF_INET, SOCK_STREAM, 0);
+    if(serverSocket == -1)
         errorHandling("socket() error");
     
     //Initialize server socket
@@ -35,22 +35,22 @@ int main(int argc,char **argv)
     serverAddress.sin_port = htons(atoi(argv[1]));
 
     //Assign an IP address and port to the server socket
-    if(bind(serverSock, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) == -1)
+    if(bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) == -1)
         errorHandling("bind() error");
     //Change the socket state to listening for client connections
-    if(listen(serverSock, 5) == -1)
+    if(listen(serverSocket, 5) == -1)
         errorHandling("listen() error");
 
     //Accept the connection request from the first client in the waiting queue
-    cilntAddressSize = sizeof(cilntAddress);
-    clintSock = accept(serverSock, (struct sockaddr*)&cilntAddress,&cilntAddressSize);
-    if(clintSock == -1)
+    clientAddressSize = sizeof(clientAddress);
+    clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress,&clientAddressSize);
+    if(clientSocket == -1)
         errorHandling("accept() error");
 
-    write(clintSock, message, sizeof(message));
+    write(clientSocket, message, sizeof(message));
 
     //Close the socket
-    close(clintSock);
+    close(clientSocket);
     
     return 0;
 }
