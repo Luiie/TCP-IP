@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+# define BUFFER_SIZE 1024
+
 void errorHandling(char *message);
 
 int main(int argc,char **argv)
@@ -14,10 +16,10 @@ int main(int argc,char **argv)
     int clientSocket;
     struct sockaddr_in serverAddress;
     struct sockaddr_in clientAddress;
-    int clientAddressSize;
-    char message[]="Hello HANY!";
+    int clientAddressSize, strLength;
+    char message[BUFFER_SIZE];
 
-    if(argc =! 2)
+    if(argc != 2)
     {
         printf("Usage : %s <port> ",argv[0]);
        exit(1);
@@ -43,14 +45,22 @@ int main(int argc,char **argv)
 
     //Accept the connection request from the first client in the waiting queue
     clientAddressSize = sizeof(clientAddress);
-    clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress,&clientAddressSize);
-    if(clientSocket == -1)
-        errorHandling("accept() error");
+    for(int i=0 ; i<5 ; i++)
+    {
+        clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressSize);
+        if(clientSocket == -1)
+            errorHandling("accept() error");
+        else
+            printf("Connected: client%d \n", i+1);
+        
+        while(strLength=read(clientSocket, message, BUFFER_SIZE) != 0)
+            write(clientSocket, message, strLength);
 
-    write(clientSocket, message, sizeof(message));
+        close(clientSocket);
+    }
 
     //Close the socket
-    close(clientSocket);
+    close(serverSocket);
     
     return 0;
 }

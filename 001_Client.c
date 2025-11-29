@@ -6,15 +6,16 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+# define BUFFER_SIZE 1024
+
 void errorHandling(char *message);
 
 int main(int argc, char **argv)
 {
     int clientSocket;
     struct sockaddr_in serverAddress;
-    char message[30];
+    char message[BUFFER_SIZE];
     int strLength = 0;
-    int index = 0, readLength = 0;
 
     if(argc != 3)
     {
@@ -36,19 +37,24 @@ int main(int argc, char **argv)
     //Connect to the server
     if(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
         errorHandling("connect() error!!");
-
+    else
+        puts("Connected!");
+    
     //Receive data byte-by-byte with boundary check
-    while(readLength = read(clientSocket, &message[index++], 1))
+    while(1)
     {
-        if(strLength == -1)
-            errorHandling("read() error!");
-        
-        strLength += readLength;
-    }
-    message[strLength] = '\0';
+        fputs("Input message: ", stdout);
+        fgets(message, BUFFER_SIZE, stdin);
 
-    printf("Message from server : %s \n", message);
-    printf("Function read call counter : %d \n", strLength);
+        if(!strcmp(message, "Q\n") || !strcmp(message, "q\n"))
+            break;
+        
+        write(clientSocket, message, strlen(message));
+        strLength = read(clientSocket, message, BUFFER_SIZE-1);
+        message[strLength] = 0;
+
+        printf("Message from server : %s \n", message);
+    }
 
     //Close the socket
     close(clientSocket);
