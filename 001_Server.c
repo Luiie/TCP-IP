@@ -17,7 +17,7 @@ int main(int argc,char **argv)
     int clientAddressSize;
     char message[]="Hello HANY!";
 
-    if(argc != 2)
+    if(argc =! 2)
     {
         printf("Usage : %s <port> ",argv[0]);
        exit(1);
@@ -40,6 +40,8 @@ int main(int argc,char **argv)
     //Change the socket state to listening for client connections
     if(listen(serverSocket, 5) == -1)
         errorHandling("listen() error");
+    clientAddressSize = sizeof(clientAddress);
+    clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress,&clientAddressSize);        //요청 수락
 
     //Accept the connection request from the first client in the waiting queue
     clientAddressSize = sizeof(clientAddress);
@@ -60,4 +62,4 @@ void errorHandling(char *message)
     fputs(message, stderr);
     fputc(' ',stderr);
     exit(1);
-}  
+}

@@ -10,7 +10,7 @@ void errorHandling(char *message);
 
 int main(int argc, char **argv)
 {
-    int aSocket;
+    int clientSocket;
     struct sockaddr_in serverAddress;
     char message[30];
     int strLength = 0;
@@ -23,8 +23,8 @@ int main(int argc, char **argv)
     }
 
     // Create client socket
-    aSocket = socket(PF_INET, SOCK_STREAM, 0);
-    if(aSocket == -1)
+    clientSocket = socket(PF_INET, SOCK_STREAM, 0);
+    if(clientSocket == -1)
         errorHandling("socket() error");
 
     //Initialize server socket
@@ -34,11 +34,11 @@ int main(int argc, char **argv)
     serverAddress.sin_port = htons(atoi(argv[2]));
 
     //Connect to the server
-    if(connect(aSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
+    if(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
         errorHandling("connect() error!!");
 
     //Receive data byte-by-byte with boundary check
-    while(readLength = read(aSocket, &message[index++], 1))
+    while(readLength = read(clientSocket, &message[index++], 1))
     {
         if(strLength == -1)
             errorHandling("read() error!");
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     printf("Function read call counter : %d \n", strLength);
 
     //Close the socket
-    close(aSocket);
+    close(clientSocket);
 
     return 0;
 }
