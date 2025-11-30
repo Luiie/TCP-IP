@@ -12,6 +12,24 @@ Client
 TCP/IP Protocol Stack
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/50923ca3-f87d-4e5f-b43f-912e0ef2cb46" />
 
+1. Application 계층
+- 서버/클라이언트 프로그램 또는 HTTP, FTP 같은 서비스들이 동작
+- 데이터를 어떻게 주고받을지, 메시지 형식은 무엇인지, 요청/응답의 규칙은 무엇인지 같은 “통신 방식”을 정의
+
+2. TCP/UDP (Transport 계층)
+- Application 계층에서 만든 데이터를 실제 전송 가능한 형태로 만들어 주는 계층
+- TCP는 신뢰성(재전송, 순서 보장 등)을 제공하고, UDP는 빠른 전송을 위한 단순한 구조
+- IP 계층이 정해준 경로를 사용해 데이터의 전달 자체를 담당
+
+3. IP (Network 계층)
+- 데이터를 목적지까지 보내기 위해 어떤 경로(Route)를 선택할지 결정
+- IP는 연결을 유지하지 않고, 데이터가 잘 도착했는지도 확인하지 않기 때문에 비연결지향적이고 신뢰성이 없음
+- 대신 빠르고 유연하게 여러 네트워크를 넘나들 수 있음
+
+4. Link 계층 (Data Link / Physical 계층 포함)
+- 실제 물리적인 네트워크 환경(LAN, WAN, MAN 등)에서 전기 신호, MAC 주소, 프레임 구조 등을 이용해 데이터를 전송하는 계층
+- 물리적 매체와 이를 사용하는 규칙을 표준화한 단계
+
 ### 03 TCP
 TCP Server/Client Flow
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/0e97a602-2c28-4216-bb6b-0a4fc1ddacb6" />
