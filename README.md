@@ -12,7 +12,6 @@ Client
   - 운영체제에게 어떤 소켓을 통해 데이터를 주고받을지 알려주는 역할
   - read, write, close 같은 함수는 이 descriptor를 이용해 데이터 송수신과 소켓 관리를 수행
 
-### 02 TCP/UDP
 TCP/IP Protocol Stack
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/50923ca3-f87d-4e5f-b43f-912e0ef2cb46" />
 
@@ -33,6 +32,18 @@ TCP/IP Protocol Stack
 4. Link 계층 (Data Link / Physical 계층 포함)
 - 실제 물리적인 네트워크 환경(LAN, WAN, MAN 등)에서 전기 신호, MAC 주소, 프레임 구조 등을 이용해 데이터를 전송하는 계층
 - 물리적 매체와 이를 사용하는 규칙을 표준화한 단계
+
+### 02 TCP/UDP
+- TCP = 연결형(Connected) 프로토콜
+  → 클라이언트마다 “연결 상태”를 따로 관리해야 해서 소켓이 여러 개 필요
+  1. 서버는 먼저 listen 소켓(파일 디스크립터 하나)을 만들어 놓음
+  2. 클라이언트가 접속하면, 서버는 새로운 소켓을 하나 더 생성(accept)
+  3. 각 클라이언트마다 독립된 소켓이 생김
+    
+- UDP = 비연결형(Connectionless) 프로토콜
+  → 연결을 유지할 필요가 없어서 하나의 소켓만으로도 여러 클라이언트와 통신 가능
+  1. 클라이언트별로 별도의 연결 상태를 유지할 필요가 없음
+
 
 ### 03 TCP
 TCP Server/Client Flow
