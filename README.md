@@ -8,6 +8,10 @@ Server
 Client
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/13807b55-d1c9-481c-a904-1461cdecdb08" />
 
+- **Socket Descriptor** = key for socket
+  - 운영체제에게 어떤 소켓을 통해 데이터를 주고받을지 알려주는 역할
+  - read, write, close 같은 함수는 이 descriptor를 이용해 데이터 송수신과 소켓 관리를 수행
+
 ### 02 TCP/UDP
 TCP/IP Protocol Stack
 <img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/50923ca3-f87d-4e5f-b43f-912e0ef2cb46" />
