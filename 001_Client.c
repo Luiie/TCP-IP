@@ -16,6 +16,7 @@ int main(int argc, char **argv)
     struct sockaddr_in serverAddress;
     char message[BUFFER_SIZE];
     int strLength = 0;
+    int recvLength = 0, recvCounter;
 
     if(argc != 3)
     {
@@ -49,11 +50,18 @@ int main(int argc, char **argv)
         if(!strcmp(message, "Q\n") || !strcmp(message, "q\n"))
             break;
         
-        write(clientSocket, message, strlen(message));
-        strLength = read(clientSocket, message, BUFFER_SIZE-1);
+        strLength = write(clientSocket, message, strlen(message));
+        //Read as much data as has been written to the message.
+        while(recvLength < strLength)
+        {            
+            recvCounter = read(clientSocket, message, BUFFER_SIZE-1);
+            if(recvCounter == -1)
+                errorHandling("read() error!");
+            recvLength += recvCounter;
+        }
         message[strLength] = 0;
 
-        printf("Message from server : %s \n", message);
+        printf("Message from server : %s", message);
     }
 
     //Close the socket
