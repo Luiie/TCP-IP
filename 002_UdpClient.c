@@ -13,10 +13,10 @@ void errorHandling(char *message);
 int main(int argc, char **argv)
 {
     int clientSocket;
-    struct sockaddr_in serverAddress;
+    struct sockaddr_in serverAddress, fromAddress;
     char message[BUFFER_SIZE];
     int strLength = 0;
-    int recvLength = 0, recvCounter;
+    socklen_t addressSize;
 
     if(argc != 3)
     {
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     }
 
     // Create client socket
-    clientSocket = socket(PF_INET, SOCK_STREAM, 0);
+    clientSocket = socket(PF_INET, SOCK_DGRAM, 0);
     if(clientSocket == -1)
         errorHandling("socket() error");
 
@@ -35,30 +35,18 @@ int main(int argc, char **argv)
     serverAddress.sin_addr.s_addr = inet_addr(argv[1]);
     serverAddress.sin_port = htons(atoi(argv[2]));
 
-    //Connect to the server
-    if(connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
-        errorHandling("connect() error!!");
-    else
-        puts("Connected!");
-    
     //Receive data byte-by-byte with boundary check
     while(1)
     {
         fputs("Input message: ", stdout);
-        fgets(message, BUFFER_SIZE, stdin);
+        fgets(message, sizeof(message), stdin);
 
         if(!strcmp(message, "Q\n") || !strcmp(message, "q\n"))
             break;
         
-        strLength = write(clientSocket, message, strlen(message));
-        //Read as much data as has been written to the message.
-        while(recvLength < strLength)
-        {            
-            recvCounter = read(clientSocket, message, BUFFER_SIZE-1);
-            if(recvCounter == -1)
-                errorHandling("read() error!");
-            recvLength += recvCounter;
-        }
+        sendto(clientSocket, message, strlen(message), 0, (struct sockaddr*) &serverAddress, sizeof(serverAddress));
+        addressSize = sizeof(fromAddress);
+        strLength = recvfrom(clientSocket, message, BUFFER_SIZE, 0, (struct sockaddr*) &fromAddress, &addressSize);
         message[strLength] = 0;
 
         printf("Message from server : %s", message);

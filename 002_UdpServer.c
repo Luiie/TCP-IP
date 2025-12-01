@@ -13,10 +13,10 @@ void errorHandling(char *message);
 int main(int argc,char **argv)
 {
     int serverSocket;
-    int clientSocket;
     struct sockaddr_in serverAddress;
     struct sockaddr_in clientAddress;
-    int clientAddressSize, strLength;
+    socklen_t clientAddressSize;
+    int strLength;
     char message[BUFFER_SIZE];
 
     if(argc != 2)
@@ -26,7 +26,7 @@ int main(int argc,char **argv)
     }
 
     //Create server socket
-    serverSocket = socket(PF_INET, SOCK_STREAM, 0);
+    serverSocket = socket(PF_INET, SOCK_DGRAM, 0);
     if(serverSocket == -1)
         errorHandling("socket() error");
     
@@ -39,28 +39,15 @@ int main(int argc,char **argv)
     //Assign an IP address and port to the server socket
     if(bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress)) == -1)
         errorHandling("bind() error");
-    //Change the socket state to listening for client connections
-    if(listen(serverSocket, 5) == -1)
-        errorHandling("listen() error");
 
     //Accept the connection request from the first client in the waiting queue
-    clientAddressSize = sizeof(clientAddress);
-    for(int i=0 ; i<5 ; i++)
+    while(1)
     {
-        clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressSize);
-        if(clientSocket == -1)
-            errorHandling("accept() error");
-        else
-            printf("Connected: client%d \n", i+1);
-        
-        while((strLength=read(clientSocket, message, BUFFER_SIZE)) != 0)
-        {
-            message[strLength] = '\0';
-            write(clientSocket, message, strLength);
-            printf("Message from client : %s", message);
-        }    
+        clientAddressSize = sizeof(clientAddress);
+        strLength=recvfrom(serverSocket, message, BUFFER_SIZE, 0, (struct sockaddr*)&clientAddress, &clientAddressSize);
+        sendto(serverSocket, message, strLength, 0, (struct sockaddr*)&clientAddress, clientAddressSize);
 
-        close(clientSocket);
+        printf("Message from client : %s", message);
     }
 
     //Close the socket
