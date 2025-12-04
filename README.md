@@ -58,3 +58,24 @@ Consequently, the server only echos the first byte (strLength is 1), losing the 
 The fix is to use parentheses to prioritize the assignment: while((strLength = read(...)) > 0).
 + The issue occurs because the buffer isn’t null-terminated after read(), causing leftover data to appear in the output.
 Clear the buffer and add a null terminator (message[strLength] = '\0') to prevent mixed or corrupted messages.
+
+### 05 UDP
+- sendto/recvfrom: Unconnected UDP, The UDP socket does not have a fixed IP/Port. Each time sendto() is called, the destination address is provided, used for sending, and then discarded.
+  - sendto: set destination address IP/Port number -> data sending -> delete destination address IP/Port number
+- write/read: Connected UDP, By calling connect(), the socket is bound to a destination address IP/Port. This allows repeated communication with the same destination more efficiently, saving time and system resources.
+
+### Half-close
+
+
+
+### Time-wait
+
+
+### Nagle
+
+
+### Process
+
+
+
+### Pipe & Multiplexing
