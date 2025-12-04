@@ -64,11 +64,20 @@ Clear the buffer and add a null terminator (message[strLength] = '\0') to preven
   - sendto: set destination address IP/Port number -> data sending -> delete destination address IP/Port number
 - write/read: Connected UDP, By calling connect(), the socket is bound to a destination address IP/Port. This allows repeated communication with the same destination more efficiently, saving time and system resources.
 
-### Half-close
+### 06 Half-close
+For example,
+- even after the server sends an EOF and closes its output stream, 
+- the client can still keep its input stream open.
+
+This allows the client to notify the server that the file transfer is complete while still remaining able to receive data.
+<img width="962" height="1024" alt="image" src="https://github.com/user-attachments/assets/7efa207d-128f-4a77-afd6-6c854d784b41" />
+
+
+### 07 Process
 
 
 
-### Time-wait
+###Time-wait
 
 
 ### Nagle
