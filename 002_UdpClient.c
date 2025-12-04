@@ -35,6 +35,9 @@ int main(int argc, char **argv)
     serverAddress.sin_addr.s_addr = inet_addr(argv[1]);
     serverAddress.sin_port = htons(atoi(argv[2]));
 
+    //connect UDP
+    connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+
     //Receive data byte-by-byte with boundary check
     while(1)
     {
@@ -44,9 +47,9 @@ int main(int argc, char **argv)
         if(!strcmp(message, "Q\n") || !strcmp(message, "q\n"))
             break;
         
-        sendto(clientSocket, message, strlen(message), 0, (struct sockaddr*) &serverAddress, sizeof(serverAddress));
+        write(clientSocket, message, strlen(message));
         addressSize = sizeof(fromAddress);
-        strLength = recvfrom(clientSocket, message, BUFFER_SIZE, 0, (struct sockaddr*) &fromAddress, &addressSize);
+        strLength = read(clientSocket, message, sizeof(message));
         message[strLength] = 0;
 
         printf("Message from server : %s", message);
