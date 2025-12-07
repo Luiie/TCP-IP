@@ -13,10 +13,10 @@ void errorHandling(char *message);
 int main(int argc, char **argv)
 {
     int clientSocket;
+    FILE *filePointer;
     struct sockaddr_in serverAddress;
     char message[BUFFER_SIZE];
-    int strLength = 0;
-    int recvLength = 0, recvCounter;
+    int readCount;
 
     if(argc != 3)
     {
@@ -24,10 +24,16 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    // Create client socket
+    // Create client socket & file
     clientSocket = socket(PF_INET, SOCK_STREAM, 0);
     if(clientSocket == -1)
         errorHandling("socket() error");
+    filePointer = fopen("receive.dat", "wb");
+    if(filePointer == NULL)
+    {
+        perror("fopen");
+        exit(1);
+    }
 
     //Initialize server socket
     memset(&serverAddress, 0, sizeof(serverAddress));
@@ -41,31 +47,18 @@ int main(int argc, char **argv)
     else
         puts("Connected!");
     
-    //Receive data byte-by-byte with boundary check
-    while(1)
+    //Receive data
+    while((readCount = read(clientSocket, message, BUFFER_SIZE)) != 0)
     {
-        fputs("Input message: ", stdout);
-        fgets(message, BUFFER_SIZE, stdin);
-
-        if(!strcmp(message, "Q\n") || !strcmp(message, "q\n"))
-            break;
-        
-        strLength = write(clientSocket, message, strlen(message));
-        //Read as much data as has been written to the message.
-        while(recvLength < strLength)
-        {            
-            recvCounter = read(clientSocket, message, BUFFER_SIZE-1);
-            if(recvCounter == -1)
-                errorHandling("read() error!");
-            recvLength += recvCounter;
-        }
-        message[strLength] = 0;
-
-        printf("Message from server : %s", message);
+        fwrite((void*)message, 1, readCount, filePointer);
     }
 
-    //Close the socket
+    puts("Receive file data");
+    write(clientSocket, "Fare well", strlen("Fare well"));
+
+    //Close the socket & file
     close(clientSocket);
+    fclose(filePointer);
 
     return 0;
 }
