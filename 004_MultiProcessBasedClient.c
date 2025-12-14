@@ -3,19 +3,21 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 
 # define BUFFER_SIZE 1024
 
 void errorHandling(char *message);
+void readRoutine(int socket, char *message);
+void writeRoutine(int socket, char *message);
 
 int main(int argc, char **argv)
 {
     int clientSocket;
     struct sockaddr_in serverAddress;
+
+    pid_t processId;
     char message[BUFFER_SIZE];
-    int strLength = 0;
 
     if(argc != 3)
     {
@@ -40,20 +42,23 @@ int main(int argc, char **argv)
     else
         puts("Connected!");
     
-    //Receive data byte-by-byte with boundary check
-    while(1)
+    //Create a child process to....
+    processId = fork();
+    if (processId == -1)
     {
-        fputs("Input message: ", stdout);
-        fgets(message, BUFFER_SIZE, stdin);
+        close(clientSocket);
+        errorHandling("fork() error");
+    }
 
-        if(!strcmp(message, "Q\n") || !strcmp(message, "q\n"))
-            break;
-        
-        write(clientSocket, message, strlen(message));
-        strLength = read(clientSocket, message, BUFFER_SIZE-1);
-        message[strLength] = 0;
-
-        printf("Message from server : %s \n", message);
+    if(processId == 0)
+    {
+        //Child process: write only
+        writeRoutine(clientSocket, message);
+    }
+    else
+    {
+        //Parent process: read only
+        readRoutine(clientSocket, message);
     }
 
     //Close the socket
@@ -67,4 +72,33 @@ void errorHandling(char *message)
     fputs(message, stderr);
     fputc('\n', stderr);
     exit(1);
+}
+
+void readRoutine(int socket, char *message)
+{
+    int strLength;
+    while ((strLength = read(socket, message, BUFFER_SIZE)) > 0)
+    {
+        message[strLength] = '\0';
+        printf("Message from server : %s\n", message);
+    }
+    
+    printf("Server closed output stream\n");
+}
+
+void writeRoutine(int socket, char *message)
+{
+    while(1)
+    {
+        fputs("Input message: ", stdout);
+        fgets(message, BUFFER_SIZE, stdin);
+
+        if(!strcmp(message, "Q\n") || !strcmp(message, "q\n"))
+        {            
+            return;
+        }
+        write(socket, message, strlen(message));
+    }
+    shutdown(socket, SHUT_WR);
+    close(socket);
 }

@@ -32,7 +32,7 @@ int main(int argc,char *argv[])
     //Register a signal handler to prevent zombie processes
     action.sa_handler = readChildProcess;
     sigemptyset(&action.sa_mask);
-    action.sa_flags = SA_RESTART; //// Enable automatic restart of interrupted system calls (e.g., accept) when a signal is received
+    action.sa_flags = SA_RESTART; //Enable automatic restart of interrupted system calls (e.g., accept) when a signal is received
     state = sigaction(SIGCHLD, &action, 0);
 
     //Create a TCP server socket
