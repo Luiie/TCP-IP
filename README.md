@@ -73,9 +73,6 @@ This allows the client to notify the server that the file transfer is complete w
 <img width="962" height="1024" alt="image" src="https://github.com/user-attachments/assets/7efa207d-128f-4a77-afd6-6c854d784b41" />
 
 
-### 07 Process
-
-
 
 ###Time-wait
 
@@ -83,8 +80,26 @@ This allows the client to notify the server that the file transfer is complete w
 ### Nagle
 
 
-### Process
+### 07 Process
 
+- 멀티프로세스 서버에서 클라이언트 종료 시 accept() 에러가 발생한 이유는
+자식 프로세스 종료로 SIGCHLD 시그널이 발생하며 accept()가 중단되기 때문
+
+해결 방법은 sigaction()에서 SA_RESTART 옵션을 사용해 시스템 콜을 자동 재시작
+
+또는 accept()가 -1을 반환하고 errno == EINTR인 경우 재시도하도록 처리
+
+- 클라이언트에서 메시지 순서가 어긋난 이유는 fork() 후 읽기/쓰기 프로세스가 비동기적으로 실행되기 때문
+
+서버 응답 출력과 사용자 입력 프롬프트가 서로 경쟁 상태(race condition)가 됨
+
+전역 변수를 이용해 출력 완료 여부를 제어하려 했으나,
+
+프로세스 간에는 메모리가 공유되지 않아 전역 변수 동기화가 불가능해 실패
+
+해결 방법은 출력/입력을 한 프로세스에서 순차 처리하거나,
+
+IPC(파이프, 시그널) 또는 select()/poll() 기반 단일 프로세스 I/O 모델을 사용하는 것
 
 
 ### Pipe & Multiplexing
