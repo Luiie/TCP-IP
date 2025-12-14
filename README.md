@@ -83,7 +83,9 @@ This allows the client to notify the server that the file transfer is complete w
 ### 07 Process
 
 - fork()
-  
+
+<img width="1024" height="448" alt="image" src="https://github.com/user-attachments/assets/88bb6445-7def-4e19-ae23-3c6eb7578b96" />
+
 - 멀티프로세스 서버에서 클라이언트 종료 시 accept() 에러가 발생한 이유는
 자식 프로세스 종료로 SIGCHLD 시그널이 발생하며 accept()가 중단되기 때문
 
