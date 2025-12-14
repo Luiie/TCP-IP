@@ -32,7 +32,7 @@ int main(int argc,char *argv[])
     //Register a signal handler to prevent zombie processes
     action.sa_handler = readChildProcess;
     sigemptyset(&action.sa_mask);
-    action.sa_flags = 0;
+    action.sa_flags = SA_RESTART; //// Enable automatic restart of interrupted system calls (e.g., accept) when a signal is received
     state = sigaction(SIGCHLD, &action, 0);
 
     //Create a TCP server socket
@@ -80,9 +80,11 @@ int main(int argc,char *argv[])
             {
                 write(clientSocket, message, strLength);
             }
-            printf("Message from client : %s", message);
 
             close(clientSocket);
+            puts("Client is disconnected");
+
+            return 0;
         }
         else
         {
@@ -109,4 +111,5 @@ void readChildProcess(int signal)
     pid_t processId;
     int status;
     processId = waitpid(-1, &status, WNOHANG);
+    printf("Removed process ID = %d\n", processId);
 }
