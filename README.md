@@ -82,6 +82,8 @@ This allows the client to notify the server that the file transfer is complete w
 
 ### 07 Process
 
+- fork()
+  
 - 멀티프로세스 서버에서 클라이언트 종료 시 accept() 에러가 발생한 이유는
 자식 프로세스 종료로 SIGCHLD 시그널이 발생하며 accept()가 중단되기 때문
 
@@ -103,3 +105,9 @@ IPC(파이프, 시그널) 또는 select()/poll() 기반 단일 프로세스 I/O 
 
 
 ### Pipe & Multiplexing
+
+- Multiplexing =
+- Multiplexing using **select()** = 여러 fd를 모아놓고(=events) 동시에 관찰
+  - 파일 디스크립터의 설정
+  - 검사 범위 지정
+  - 타임아웃의 설정
