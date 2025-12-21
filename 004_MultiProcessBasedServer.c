@@ -18,6 +18,7 @@ int main(int argc,char *argv[])
 
     pid_t processId;
     struct sigaction action;
+    int fileDescriptors[2];
 
     socklen_t clientAddressSize;
     int strLength, state;
@@ -52,7 +53,36 @@ int main(int argc,char *argv[])
     if(listen(serverSocket, 5) == -1)
         errorHandling("listen() error");
 
-    //Continuously accept client connection requests
+    //Create a pipe for inter-process communication (IPC)
+    pipe(fileDescriptors);
+    if (pipe(fileDescriptors) == -1)
+        errorHandling("pipe() error");
+
+    processId = fork();
+    if (processId == -1)
+    {
+        close(serverSocket);
+        errorHandling("fork() error");
+    }
+
+    if(processId == 0)
+    {
+        //Child process: Reads messages from the pipe and writes them to a file
+        FILE *filePointer = fopen("echoMessage.txt", "wt");
+        char messageBuffer[BUFFER_SIZE];
+        int index, length;
+
+        for(index=0 ; index<5 ; index++)
+        {
+            length = read(fileDescriptors[0], messageBuffer, BUFFER_SIZE);
+            fwrite((void*)messageBuffer, 1, length, filePointer);
+        }
+
+        fclose(filePointer);
+        return 0;
+    }
+
+    //Accept client connections continuously
     while(1)
     {
         clientAddressSize = sizeof(clientAddress);
@@ -73,12 +103,13 @@ int main(int argc,char *argv[])
 
         if(processId == 0)
         {
-            //Child process: handle communication with the client
+            //Child process: Echo received data back to the client
             close(serverSocket);
 
             while((strLength=read(clientSocket, message, BUFFER_SIZE)) != 0)
             {
                 write(clientSocket, message, strLength);
+                write(fileDescriptors[1], message, strLength);
             }
 
             close(clientSocket);
